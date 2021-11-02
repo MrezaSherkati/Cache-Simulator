@@ -22,9 +22,6 @@ static int cache_writeback = DEFAULT_CACHE_WRITEBACK;
 static int cache_writealloc = DEFAULT_CACHE_WRITEALLOC;
 static unsigned tag_mask;
 static int tag_mask_offset;
-/* cache model data structures */
-//static Pcache icache;
-//static Pcache dcache;
 static cache c1;
 static cache c2;
 static cache_line *array1;
@@ -38,7 +35,7 @@ static cache_stat cache_stat_data;
 void set_cache_param(param, value)
   int param;
   int value;
-{//printf("hello3");
+{
 
   switch (param) {
   case CACHE_PARAM_BLOCK_SIZE:
@@ -67,7 +64,7 @@ void set_cache_param(param, value)
     cache_writeback = FALSE;
     break;
   case CACHE_PARAM_WRITEALLOC:
-    cache_writealloc = TRUE;//printf("hello 1");
+    cache_writealloc = TRUE;
     break;
   case CACHE_PARAM_NOWRITEALLOC:
     cache_writealloc = FALSE;
@@ -76,13 +73,13 @@ void set_cache_param(param, value)
     printf("error set_cache_param: bad parameter value\n");
     exit(-1);
  }
-//printf("Hello");
+
 }
 /************************************************************/
 
 /************************************************************/
 void init_cache()
-{//printf("hello 1");
+{
 c1.size=cache_usize;
 c1.associativity=cache_assoc;
 c1.n_sets=cache_usize/cache_block_size;
@@ -103,8 +100,7 @@ tag_mask_offset=temp1+c1.index_mask_offset;
 tag_mask=0xffffffff;
 tag_mask=tag_mask<<tag_mask_offset;
 
-//printf("index mask= %x \n", tag_mask);
-//array1=initialize_array(c1.associativity, c1.n_sets);
+
 int memnum=c1.n_sets*c1.associativity;
 array1=(cache_line *)malloc(sizeof(cache_line)*memnum);
 int j;
@@ -124,7 +120,6 @@ for(j=0;j<memnum;j++){
 void perform_access(addr, access_type)
   unsigned addr, access_type;
 {unsigned index;
-//printf("addr= %x \n", addr);
 index = (addr&c1.index_mask) >> c1.index_mask_offset;
 int indexi=index;
 int indexii;
@@ -132,16 +127,12 @@ cache_line l1,l2,l3;
 int array2[c1.associativity];
 int i;
 int j;
-//printf("indexi:%d \n", indexi);
+
 	if(access_type==0){
 		cache_stat_data.accesses++;
-		//unsigned tag_mask=0xffffe000;
-		//int tag_mask_offset=13;
 		unsigned addrtag;
-		//unsigned temp=addr&tag_mask;
 		addrtag=(addr&tag_mask) >> tag_mask_offset;
 		int i;
-		//int j=0;
 		for(i=0;i<c1.associativity;i++){
 			array2[i]=(i*c1.n_sets)+indexi;		
 		}
@@ -152,7 +143,7 @@ int j;
 			}		
 		}
 		goto t2;
-			t1: //if(array1[indexi].used==0){
+			t1: 
 			array1[indexii].tag=addrtag;
 			array1[indexii].dirty=0;
 			array1[indexii].used=1;
@@ -164,8 +155,8 @@ int j;
 			}		
 			cache_stat_data.misses++;
 			goto end0;		
-		//}	
-		t2: //else{
+			
+		t2: 
 			l1.tag=addrtag;			
 			for(i=0;i<c1.associativity;i++){
 				if(l1.tag==array1[array2[i]].tag){
@@ -178,16 +169,12 @@ int j;
 					}goto end0;				
 				}			
 			}			
-			//l1.tag=addrtag;
-			//if(l1.tag==array1[indexi].tag){
-			//	cache_stat_data.demand_fetches=cache_stat_data.demand_fetches+4;
-			//}
-			//else{
+			
 				cache_stat_data.replacements++;
 				int min=array1[array2[0]].lru;
 				int tempa=array2[0];
 				for(i=0;i<c1.associativity;i++){
-					//int tempb=
+					
 					if(min>array1[array2[i]].lru){
 						min=array1[array2[i]].lru;
 						tempa=array2[i];					
@@ -204,14 +191,12 @@ int j;
 					if(array2[j]!=tempa)
 					array1[array2[j]].lru>>1;			
 				}
-				//printf("I am here");	
-			//}
-	//}
+					
+			
+	
 	}end0:
 	if(access_type==1){
 		cache_stat_data.accesses++;
-		//unsigned tag_mask=0xffffe000;
-		//int tag_mask_offset=13;
 		unsigned addrtag;
 		addrtag=(addr&tag_mask) >> tag_mask_offset;
 		for(i=0;i<c1.associativity;i++){
@@ -223,8 +208,7 @@ int j;
 				goto t3;		
 			}		
 		}goto t4;
-		//printf("%d \n", l2.used);
-		//if(array1[indexi].used==0){
+		
 		t3:	array1[indexi].tag=addrtag;
 			array1[indexi].dirty=1;
 			array1[indexi].used=1;
@@ -237,8 +221,7 @@ int j;
 
 			cache_stat_data.misses++;
 			goto end1;
-		//}
-		//else{//printf("I am here");
+		
 		t4:	l1.tag=addrtag;
 			for(i=0;i<c1.associativity;i++){
 				if(l1.tag==array1[array2[i]].tag){
@@ -251,7 +234,7 @@ int j;
 					}goto end1;				
 				}			
 			}
-			//else{
+			
 				cache_stat_data.replacements++;
 				int min=array1[array2[0]].lru;
 				int tempa=array2[0];
@@ -266,19 +249,16 @@ int j;
 					cache_stat_data.copies_back++;
 				else
 					array1[tempa].dirty=1;
-			//}
-		//}
+		
+		
 
 	}end1:
 	if(access_type==2){
 			cache_stat_inst.accesses++;
-		//unsigned tag_mask=0xffffe000;
-		//int tag_mask_offset=13;
+		
 		unsigned addrtag;
-		//unsigned temp=addr&tag_mask;
 		addrtag=(addr&tag_mask) >> tag_mask_offset;
 		int i;
-		//int j=0;
 		for(i=0;i<c1.associativity;i++){
 			array2[i]=i*c1.n_sets+indexi;		
 		}
@@ -289,7 +269,7 @@ int j;
 			}		
 		}
 		goto t6;
-			t5: //if(array1[indexi].used==0){
+			t5: 
 			array1[indexii].tag=addrtag;
 			array1[indexii].dirty=0;
 			array1[indexii].used=1;
@@ -301,8 +281,8 @@ int j;
 			}		
 			cache_stat_inst.misses++;
 			goto end2;		
-		//}	
-		t6: //else{
+			
+		t6: 
 			l1.tag=addrtag;			
 			for(i=0;i<c1.associativity;i++){
 				if(l1.tag==array1[array2[i]].tag){
@@ -315,11 +295,7 @@ int j;
 					}goto end2;				
 				}			
 			}			
-			//l1.tag=addrtag;
-			//if(l1.tag==array1[indexi].tag){
-			//	cache_stat_data.demand_fetches=cache_stat_data.demand_fetches+4;
-			//}
-			//else{
+			
 				cache_stat_inst.replacements++;
 				int min=array1[array2[0]].lru;
 				int tempa=array2[0];
@@ -341,7 +317,7 @@ int j;
 					array1[array2[j]].lru>>1;			
 				}
 				
-			//}
+			
 
 } end2: printf("");
 }
@@ -360,42 +336,7 @@ int i=0;
 /************************************************************/
 
 /************************************************************/
-/*void delete(head, tail, item)
-  Pcache_line *head, *tail;
-  Pcache_line item;
-{
-  if (item->LRU_prev) {
-    item->LRU_prev->LRU_next = item->LRU_next;
-  } else {
-    /* item at head */
-   /* *head = item->LRU_next;
-  }
 
-  if (item->LRU_next) {
-    item->LRU_next->LRU_prev = item->LRU_prev;
-  } else {
-    /* item at tail */
-    /**tail = item->LRU_prev;
-  }
-}*/
-/************************************************************/
-
-/************************************************************/
-/* inserts at the head of the list */
-//void insert(head, tail, item)
- // Pcache_line *head, *tail;
-  //Pcache_line item;
-//{
-  //item->LRU_next = *head;
-  //item->LRU_prev = (Pcache_line)NULL;
-
-  //if (item->LRU_next)
-    //item->LRU_next->LRU_prev = item;
-  //else
-    //*tail = item;
-
-  //*head = item;
-//}
 /************************************************************/
 
 /************************************************************/
