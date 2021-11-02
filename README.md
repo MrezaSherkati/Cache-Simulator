@@ -12,9 +12,9 @@ For running this code, use the command "make -f Makefile" in Linux operating sys
 
 The following basic cache statistics can be measured in this simulator for instructions and data:
 
--Total number of cache accesses
--Cache misses
--Cache miss rate
--The number of replaces
--Traffic of the cache
+- Total number of cache accesses
+- Cache misses
+- Cache miss rate
+- The number of replaces
+- Traffic of the cache
 
