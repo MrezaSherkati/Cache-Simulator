@@ -355,7 +355,6 @@ void dump_settings()
   printf("  Block size: \t%d\n", cache_block_size);
   printf("  Write policy: \t%s\n", 
 	 cache_writeback ? "WRITE BACK" : "WRITE THROUGH");
-//printf("Helooo");
   printf("  Allocation policy: \t%s\n",
 	 cache_writealloc ? "WRITE ALLOCATE" : "WRITE NO ALLOCATE");
 }
